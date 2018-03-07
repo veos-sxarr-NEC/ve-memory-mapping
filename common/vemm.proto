@@ -1,0 +1,20 @@
+message vemm_atb_request {
+	required uint32 event = 1;
+	required uint32 pid = 2;
+	required uint64 vaddr = 3;
+	required uint64 size = 4;
+	optional bytes veshm_id = 5; // used for VEPM_PUT_PAGES
+	optional int32 write = 6; // VEPM_GET_PAGES and VEPM_DMAATTACH
+	required uint32 euid = 7;
+}
+
+message vemm_atb_response {
+	required int64 result = 1;
+	optional bytes veshm_id = 2; // returned on VEPM_GET_PAGES
+	// When result >= 0 and additional_size > 0,
+	// return the pointer to an array where data
+	// in (repeated) additional are stored.
+	// Nevertheless result is still required
+	// to show error.
+	repeated uint64 additional = 3;
+}

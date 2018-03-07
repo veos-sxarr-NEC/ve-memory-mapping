@@ -1,0 +1,33 @@
+VE memory mapping: helper to map VE memory from VH process
+
+1. Requirement
+This software requires the following packages:
+ - Boost C++ library: boost and boost-program-options to run, and
+    boost-devel to build
+ - libev library: libev to run, and libev-devel to build
+ - Google Protocol Buffer (C++ version): protobuf to run, and
+    protobuf-devel to build.
+
+2. Build and Install
+Build VEMM module, including libvemmagent.so, VEMM agent shared library,
+and vemmd, VEMM daemon.
+
+$ cd vemm
+$ ./autogen.sh
+$ mkdir ../vemm-build && cd ../vemm-build
+$ ../vemm/configure --prefix=/opt/nec/ve/veos
+$ make && make install
+
+3. Run
+3.1 Run automatically by systemd
+ - Install configuration files for VE OS launcher service.
+ - Enable VEMM daemon service:
+$ systemctl enable vemmd.service
+
+3.2 Run manully
+ - Load VE driver.
+ - Load HCA kernel driver and VE PeerDirect driver.
+ - Start IVED (VESHM inter-VE daemon).
+ - Start VEMM daemon:
+$ systemctl start vemmd.service
+ - Start VE OS daemon with an option specifying VEMM daemon socket.

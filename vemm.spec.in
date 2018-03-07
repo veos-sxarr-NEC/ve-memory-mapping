@@ -1,0 +1,76 @@
+Summary: VE memory mapping module
+Name: @PACKAGE@
+Version: @VERSION@
+Release: @RELEASE@
+Vendor: NEC Corporation
+Group: System Environment/Daemons
+License: BSD
+Source0: @PACKAGE@-@VERSION@.tar.gz
+Requires: boost-program-options boost-system protobuf log4c libev
+Requires: velayout
+BuildRequires: boost-devel pkgconfig(protobuf) pkgconfig(log4c) libev-devel
+BuildRequires: velayout-devel
+%description
+VE memory mapping (VEMM) bridges requests to export VE memory
+from a PeerDirect driver to VE OS.
+
+%define _prefix @prefix@
+%define _localstatedir @localstatedir@
+%define _sysconfdir @sysconfdir@
+
+%package devel
+Summary: Development package for VE memory mapping
+Requires: %{name} = %{version}-%{release}
+%description devel
+This package include a header of VEMM agent library.
+
+%prep
+%setup -q
+
+%build
+%configure --with-systemd-unitdir=@systemd_unitdir@ \
+           --with-os-launcher-confdir=@os_launcher_confdir@
+make
+
+%install
+make DESTDIR=$RPM_BUILD_ROOT install
+mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}
+
+%define check_ve_os_state \
+for dev in /dev/veslot*; do \
+  if [ $dev == '/dev/veslot*' ];then break; fi; \
+  sysfs_path=/sys$(/usr/bin/udevadm info -q path $dev)/os_state; \
+  os_state=$(cat $sysfs_path); \
+  if [ $os_state != "1" ];then \
+    echo "Error: OS state is not offline."; exit 1; \
+  fi; \
+done \
+%{nil}
+
+%pre
+%{check_ve_os_state}
+
+%post
+systemctl daemon-reload || :
+# Since VEMM service is not always necessary,
+# post proces does not enable vemmd by default.
+# ldconfig is not necessary because libvemmagent is expected not to be
+# linked to executables, but to be dynamically loaded.
+
+%preun
+%{check_ve_os_state}
+%systemd_preun vemmd.service
+
+%files
+%{_sbindir}/*
+%{_libdir}/*.so.*
+%dir %{_localstatedir}
+%config @systemd_unitdir@/vemmd.service
+%config @os_launcher_confdir@/vemmd.options
+
+%files devel
+%{_includedir}/*.h
+%{_libdir}/*.a
+%{_libdir}/*.la
+%{_libdir}/*.so
+
