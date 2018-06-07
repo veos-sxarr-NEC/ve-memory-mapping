@@ -1,7 +1,7 @@
 Summary: VE memory mapping module
 Name: @PACKAGE@
 Version: @VERSION@
-Release: @RELEASE@
+Release: @RELEASE@%{?dist}
 Vendor: NEC Corporation
 Group: System Environment/Daemons
 License: BSD
