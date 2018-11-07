@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([VE memory mapping], [1.2.1])
+AC_INIT([VE memory mapping], [1.3.1])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -55,8 +55,8 @@ AX_BOOST_PROGRAM_OPTIONS
 AX_BOOST_ASIO
 PKG_CHECK_MODULES([PROTOBUF], [protobuf], [],
                   [AC_MSG_ERROR([protobuf-devel is missing.])])
-PKG_CHECK_MODULES([LOG4C], [log4c], [],
-                  [AC_MSG_ERROR([log4c-devel is missing.])])
+AC_CHECK_LIB([log4c], [log4c_init], [],
+             [AC_MSG_ERROR([log4c library is missing.])])
 PKG_CHECK_MODULES([SYSTEMD], [libsystemd], [],
                   [AC_MSG_ERROR([systemd-devel is missing.])])
 
@@ -67,6 +67,7 @@ AC_CHECK_LIB([velayout], [ve_layout], [],
              [AC_MSG_ERROR([velayout is missing.])])
 
 AC_CONFIG_FILES([Makefile
+                 debian/Makefile
                  vemmd/Makefile
                  vemmagent/Makefile])
 AC_OUTPUT

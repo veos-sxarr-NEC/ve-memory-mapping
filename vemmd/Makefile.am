@@ -8,6 +8,7 @@ vemmd_SOURCES = \
                 OSDaemonProxy.cpp \
                 UpcallReceiver.cpp \
                 log.cpp \
+                ../common/log_wrapper.c \
                 log.hpp
 
 noinst_HEADERS = \

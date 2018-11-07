@@ -1,0 +1,4 @@
+.@sbindir@/*
+.@libdir@/*.so.*
+.@systemd_unitdir@/vemmd.service
+.@os_launcher_confdir@/vemmd.options

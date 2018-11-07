@@ -10,7 +10,7 @@ Restart=always
 ExecStartPre=/bin/rm -f @localstatedir@/vemmd.sock ; \
   /bin/sh -c '/bin/ls -t @localstatedir@/core.* 2> /dev/null | while read c; \
     do file $c | \
-      /bin/awk -F: \'$0 ~ \"from \'\"\'\"\'@sbindir@/vemmd\" \
+      awk -F: \'$0 ~ \"from \'\"\'\"\'@sbindir@/vemmd\" \
         { print $1 }\' ; \
     done |  tail -n +4 | xargs rm -f'
 ExecStart=@sbindir@/vemmd -s @localstatedir@/vemmd.sock /dev/ve_peermem

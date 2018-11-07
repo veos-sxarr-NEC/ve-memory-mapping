@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS=-I m4
-SUBDIRS=vemmd vemmagent
+SUBDIRS=vemmd vemmagent debian
 EXTRA_DIST=common vemm.spec.in
 dist_noinst_DATA=vemm.spec
 CLEANFILES=vemm.spec

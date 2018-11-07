@@ -47,6 +47,8 @@ vemm_agent *vemm_agent__create(const char *,
 int vemm_agent__exec(vemm_agent *);
 void vemm_agent__request_stop(vemm_agent *);
 void vemm_agent__destroy(vemm_agent *);
+
+extern int LOG4C_INIT(void);
 #ifdef __cplusplus
 }
 #endif

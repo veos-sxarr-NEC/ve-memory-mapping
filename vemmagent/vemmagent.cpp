@@ -274,7 +274,7 @@ void VEMMAgent::request_stop() {
  * @return pointer to a new VEMM agent
  */
 vemm_agent *vemm_agent__create(const char *s, const ops_t *ops) {
-  log4c_init();
+  LOG4C_INIT();
   vemm_agent *rv = 0;
   auto cat = log4c_category_get(VEMMAGENT_LOG_CATEGORY);
   if (cat == 0) {

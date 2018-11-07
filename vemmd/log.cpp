@@ -22,6 +22,11 @@
  */
 #include "log.hpp"
 
+extern "C" {
+  int LOG4C_INIT();
+  int LOG4C_FINI();
+}
+
 namespace log {
 namespace impl {
   class Log {
@@ -29,13 +34,13 @@ namespace impl {
     log4c_category_t *category_;
   public:
     Log (){
-      log4c_init();
+      LOG4C_INIT();
       this->category_ = log4c_category_get(VEMMD_LOG_CATEGORY);
       if (category_ == 0)
         throw std::runtime_error("log4c_category_gat() failed.");
     }
     ~Log() {
-      log4c_fini();
+      LOG4C_FINI();
     }
     log4c_category_t *getcategory() { return this->category_; }
   } log_;

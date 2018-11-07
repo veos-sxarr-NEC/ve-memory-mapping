@@ -1,0 +1,26 @@
+Source: @PACKAGE@
+Section: misc
+Priority: extra
+Maintainer: NEC Corporation
+Build-Depends: debhelper (>=9), dh-autoreconf, libprotobuf-dev,
+               protobuf-compiler, libsystemd-dev, libboost1.62-dev,
+               libboost-program-options1.62-dev, libev-dev, liblog4c-dev
+Standards-Version: 3.9.8
+
+Package: @PACKAGE@
+Architecture: any
+Multi-Arch: same
+Depends: ${misc:Depends}, ${shlibs:Depends}, libprotobuf10,
+         libboost-program-options1.62.0, libev4, libsystemd0, liblog4c3
+Description: VE memory mapping module
+ VE memory mapping (VEMM) bridges requests to export VE memory
+ from a PeerDirect driver to VE OS.
+
+Package: @PACKAGE@-dev
+Architecture: any
+Multi-Arch: same
+Depends: ${misc:Depends}, @PACKAGE@ (= @VERSION@-@RELEASE@)
+Description: Development package for VE memory mapping
+ This package contains the files required to build system software
+ using VE memory mapping.
+ This package is not required for VE programs or libraries.

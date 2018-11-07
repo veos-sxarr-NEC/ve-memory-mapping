@@ -1,5 +1,7 @@
 lib_LTLIBRARIES = libvemmagent.la
-libvemmagent_la_SOURCES = vemmagent.cpp
+libvemmagent_la_SOURCES = \
+                          vemmagent.cpp \
+                          ../common/log_wrapper.c
 include_HEADERS = vemmagent.h
 noinst_HEADERS = VEMMAgent.hpp
 nodist_libvemmagent_la_SOURCES = vemm.pb.cc

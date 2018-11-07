@@ -1,0 +1,18 @@
+#!/bin/bash
+
+for dev in /dev/veslot*; do
+  if [ $dev == '/dev/veslot*' ]; then
+   break
+  fi
+  sysfs_path=/sys$(/usr/bin/udevadm info -q path $dev)/os_state
+  os_state=$(cat $sysfs_path)
+  if [ $os_state != "1" ]; then
+    echo "Error: OS state is not offline."
+    exit 1
+  fi
+done
+
+systemctl --no-reload disable vemmd.service || :
+systemctl stop vemmd.service || :
+
+exit 0
