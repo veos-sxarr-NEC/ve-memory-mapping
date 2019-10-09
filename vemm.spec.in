@@ -7,7 +7,7 @@ Group: System Environment/Daemons
 License: BSD
 Source0: @PACKAGE@-@VERSION@.tar.gz
 Requires: boost-program-options boost-system protobuf log4c libev
-Requires: velayout
+Requires: velayout ve_peermem
 BuildRequires: boost-devel pkgconfig(protobuf) pkgconfig(log4c) libev-devel
 BuildRequires: velayout-devel
 %description
@@ -48,7 +48,15 @@ done \
 %{nil}
 
 %pre
-%{check_ve_os_state}
+case "$1" in
+  1)
+  # install
+  ;;
+  2)
+  # upgrade
+  %{check_ve_os_state}
+  ;;
+esac
 
 %post
 systemctl daemon-reload || :
@@ -56,6 +64,17 @@ systemctl daemon-reload || :
 # post proces does not enable vemmd by default.
 # ldconfig is not necessary because libvemmagent is expected not to be
 # linked to executables, but to be dynamically loaded.
+case "$1" in
+  1)
+  # install
+  systemctl enable vemmd
+  systemctl start vemmd
+  systemctl try-restart ve-os-launcher@*
+  ;;
+  2)
+  # upgrade
+  ;;
+esac
 
 %preun
 %{check_ve_os_state}
