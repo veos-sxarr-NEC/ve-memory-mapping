@@ -17,10 +17,10 @@ from a PeerDirect driver to VE OS.
 %define _prefix @prefix@
 %define _localstatedir @localstatedir@
 %define _sysconfdir @sysconfdir@
+%define _unpackaged_files_terminate_build 0
 
 %package devel
 Summary: Development package for VE memory mapping
-Requires: %{name} = %{version}-%{release}
 %description devel
 This package include a header of VEMM agent library.
 
@@ -89,7 +89,3 @@ esac
 
 %files devel
 %{_includedir}/*.h
-%{_libdir}/*.a
-%{_libdir}/*.la
-%{_libdir}/*.so
-
