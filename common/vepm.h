@@ -31,7 +31,7 @@
 
 __BEGIN_DECLS
 
-struct vepm_atb_request {
+struct vepm_atb_request_v1 {
 	int event;
 	pid_t pid;
 	long vaddr;
@@ -42,8 +42,22 @@ struct vepm_atb_request {
 	uid_t euid;
 };
 
-#define VEPM_ATB_REQUEST _IOWR('v', 0xe2, struct vepm_atb_request)
-#define VEPM_ATB_RESPONSE _IOWR('v', 0xe3, struct vepm_atb_request)
+struct vepm_atb_request {
+        int event;
+        pid_t pid;
+        long vaddr;
+        long size;
+        long result;
+        unsigned char veshm_id[16];
+        int write;
+        uid_t euid;
+	int veos_pid;
+};
+
+#define VEPM_ATB_REQUEST_V1 _IOWR('v', 0xe2, struct vepm_atb_request_v1)
+#define VEPM_ATB_RESPONSE_V1 _IOWR('v', 0xe3, struct vepm_atb_request_v1)
+#define VEPM_ATB_REQUEST _IOWR('v', 0xe4, struct vepm_atb_request)
+#define VEPM_ATB_RESPONSE _IOWR('v', 0xe5, struct vepm_atb_request)
 
 enum {
 	VEPM_ACQUIRE = 0,

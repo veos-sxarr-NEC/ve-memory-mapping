@@ -37,6 +37,7 @@ class vemm_atb_response;
 class OSDaemonProxy : private boost::noncopyable {
 private:
   int fd_;
+  int pid_;
   ev::io watcher_;
   Dispatcher *dispatcher_;
   friend Dispatcher;
@@ -44,7 +45,6 @@ private:
 public:
   OSDaemonProxy(int, Dispatcher *);
   virtual ~OSDaemonProxy();
-
   /*
    * @brief Delegate the specified request to VE OS daemon
    * @return 1 upon success. Negative upon failure.
@@ -52,5 +52,6 @@ public:
    */
   virtual int command(vemm_atb_request &, vemm_atb_response &);
   virtual bool test_closed();
+  virtual int get_veospid() { return this->pid_; }
 };
 #endif

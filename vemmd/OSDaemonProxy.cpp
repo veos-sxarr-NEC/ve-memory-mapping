@@ -45,6 +45,13 @@ OSDaemonProxy::OSDaemonProxy(int accept_socket, Dispatcher *d): dispatcher_(d) {
     VEMMD_THROW("accept: %s", strerror(errno));
   }
   this->watcher_.set(this->fd_, ev::READ);
+  struct ucred cred;
+  socklen_t ucred_size=sizeof(struct ucred);
+  if (getsockopt(this->fd_, SOL_SOCKET, SO_PEERCRED,
+      &cred, &ucred_size) == -1) {
+    VEMMD_THROW("getsockopt: %s", strerror(errno));
+  }
+  this->pid_ = cred.pid;
 }
 
 OSDaemonProxy::~OSDaemonProxy() {

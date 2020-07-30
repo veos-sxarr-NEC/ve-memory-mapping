@@ -99,38 +99,61 @@ template <class OP, class UR>
 bool TmplDispatcher<OP, UR>::handle_request(UR *c) {
   using google::protobuf::TextFormat;
   vemm_atb_request req;
+  int pid;
   VEMMD_DEBUG("handle a request from %s", c->get_name().c_str());
-  if (c->recv_request(req) < 0) {
+  if(c->recv_request(req, pid) < 0) {
     VEMMD_ERR("failed to receive a request from %s.", c->get_name().c_str());
     return false;
   }
   /* find an agent responding */
   vemm_atb_response response, result;
   result.set_result(-ESRCH);// necessary because nodes_ can be empty.
-  for (auto &n: this->nodes_) {
+  try {
+    auto n = this->veosmap_.at(pid);
     auto status = n->command(req, response);
     switch (status) {
     case 1:
-      c->send_response(req, response);
+      c->send_response(req, response, pid);
       return true;
     case 0:
-      // try next without updating result.
       VEMMD_DEBUG("node %p returned zero", n);
       break;
     default:
       VEMMD_ERR("error while requesting to VE OS (%p) (result = %ld).", n,
         response.result());
-      result = response;//save the last error.
+      result = response;
       std::string req_str;
       TextFormat::PrintToString(req, &req_str);
       VEMMD_ERR("error to handle a request: {\n%s}", req_str.c_str());
+    }
+  } catch (std::out_of_range &oor) {
+    for (auto &n: this->nodes_) {
+      auto vpid = n->get_veospid();
+      auto status = n->command(req, response);
+      switch (status) {
+      case 1:
+        c->send_response(req, response, vpid);
+        return true;
+      case 0:
+        // try next without updating result.
+        VEMMD_DEBUG("node %p returned zero", n);
+        break;
+      default:
+        VEMMD_ERR("error while requesting to VE OS (%p) (result = %ld).", n,
+          response.result());
+        result = response;//save the last error.
+	pid = vpid;
+        std::string req_str;
+        TextFormat::PrintToString(req, &req_str);
+        VEMMD_ERR("error to handle a request: {\n%s}", req_str.c_str());
+      }
     }
   }
   std::string info_error;
   TextFormat::PrintToString(req, &info_error);
   VEMMD_ERR("No OS daemon served the request: {\n%s}",
            info_error.c_str());
-  c->send_response(req, result);
+  c->send_response(req, result, pid);
   return false;
 }
 
@@ -151,7 +174,10 @@ template <class OP, class UR>
 void TmplDispatcher<OP, UR>::proxy_cb(ev::io &w, int revents) {
   auto p = static_cast<OP *>(w.data);
   auto d = p->dispatcher_;
+  auto i = d->veosmap_.find(p->get_veospid());
   if (p->test_closed()) {
+    if (i != d->veosmap_.end())
+        d->veosmap_.erase(i);
     d->nodes_.erase(p);
     delete(p);
   }
@@ -165,6 +191,7 @@ void TmplDispatcher<OP, UR>::accept_cb(ev::io &w, int revents) {
   // add a new OSDaemon proxy for VEOS (VEMM agent) connecting to this vemmd.
   auto p = new OP(this->accept_socket_, this);
   this->nodes_.insert(p);
+  this->veosmap_[p->get_veospid()] = p;
   ev::io &wp = p->watcher_;
   // register a callback to find the connection from the agent closed.
   wp.set(this->loop_);

@@ -46,14 +46,23 @@ private:
   typedef dispatcher::TmplDispatcher<OSDaemonProxy, UpcallReceiver> Dispatcher;
   Dispatcher *dispatcher_;
   friend Dispatcher;
+  int req_var_=2;
+  virtual int recv_request_v1(vemm_atb_request &);
+  virtual int recv_request_v2(vemm_atb_request &, int &);
+  virtual int send_response_v1(const vemm_atb_request &,
+                            const vemm_atb_response &);
+  virtual int send_response_v2(const vemm_atb_request &,
+                            const vemm_atb_response &,
+                            const int &);
 
 public:
   UpcallReceiver(const std::string &, Dispatcher *);
   virtual ~UpcallReceiver();
 
-  virtual int recv_request(vemm_atb_request &);
+  virtual int recv_request(vemm_atb_request &, int &);
   virtual int send_response(const vemm_atb_request &,
-                            const vemm_atb_response &);
+                            const vemm_atb_response &,
+                            const int &);
   const std::string &get_name() { return this->name_; }
 };
 #endif

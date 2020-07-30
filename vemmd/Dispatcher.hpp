@@ -33,6 +33,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "vemm.pb.h"
+
 namespace dispatcher {
 
 /**
@@ -50,6 +52,7 @@ private:
   std::map<int, ev::sig> sigwatchers_;
   std::set<OP *> nodes_;
   std::vector<UR *> clients_;
+  std::map<int, OP *> veosmap_;
 
   static int create_accept_socket(const char *);
 
